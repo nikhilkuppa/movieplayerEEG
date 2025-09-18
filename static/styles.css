@@ -1,0 +1,19 @@
+#container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+#video-container {
+    width: 40%;
+}
+
+#plot-container {
+    width: 50%;
+}
+
+#metadata-container {
+    width: 25%;
+    margin-left: 20px;
+}
