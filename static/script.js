@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const videoPlayer = document.getElementById('videoPlayer');
+    videoPlayer.addEventListener('ended', handleVideoEnd);
     const placeholder = document.getElementById('placeholder');
     const metadataContainer = document.getElementById('metadata-table');
     const introContainer = document.getElementById('intro');
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             // Load the full plot and set zoom to show a 30 minutes window
                             loadFullPlot();
                             updatePlot(currentSceneIndex);
-                            playNextScene(currentSceneIndex);
+                            playScene(currentSceneIndex);
                         });
                 }
             });
@@ -159,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.points.length > 0) {
                     const clickedIndex = data.points[0].pointIndex;
                     currentSceneIndex = clickedIndex;
-                    playNextScene(clickedIndex);
+                    playScene(clickedIndex);
                 }
             });
 
@@ -203,7 +204,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function handleVideoEnd() {
+        videoPlayer.style.display = 'none';
+        placeholder.style.display = 'block';
+    
+        currentSceneIndex++; // Move to the next scene index
+        if (currentSceneIndex < scenes.length) {
+            playScene(currentSceneIndex); // Play the next scene if one exists
+        }
+    }
+
     function playScene(index) {
+        if (index >= scenes.length) return; // Safety check
         const sceneData = scenes[index];
         currentSceneData = sceneData; // Update current scene data
         const formattedMovieName = movieName.replace(/ /g, '_').replace(/_+$/, '');
@@ -215,10 +227,10 @@ document.addEventListener('DOMContentLoaded', function () {
         updateMetadataDisplay(sceneData);
         updatePlot(index);
 
-        videoPlayer.addEventListener('ended', () => {
-            videoPlayer.style.display = 'none';
-            placeholder.style.display = 'block';
-        })
+        // videoPlayer.addEventListener('ended', () => {
+        //     videoPlayer.style.display = 'none';
+        //     placeholder.style.display = 'block';
+        // })
     }
 
     function updateMetadataDisplay(sceneData) {
@@ -238,17 +250,17 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
     }
 
-    function playNextScene(index) {
-        if (index < scenes.length) {
-            playScene(index);
+    // function playNextScene(index) {
+    //     if (index < scenes.length) {
+    //         playScene(index);
 
-            videoPlayer.addEventListener('ended', function onEnded() {
-                videoPlayer.removeEventListener('ended', onEnded);
-                currentSceneIndex++;
-                playNextScene(currentSceneIndex);
-            });
-        }
-    }
+    //         videoPlayer.addEventListener('ended', function onEnded() {
+    //             videoPlayer.removeEventListener('ended', onEnded);
+    //             currentSceneIndex++;
+    //             playNextScene(currentSceneIndex);
+    //         });
+    //     }
+    // }
 
     function updatePlotHighlight(currentIndex) {
         const colors = scenes.map((_, index) => index === currentIndex ? 'rgba(66, 49, 17, 0.973)' : 'rgba(250, 166, 10, 0.884)');
